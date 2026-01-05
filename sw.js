@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hitc-breathe-pwa-v1';
+const CACHE_NAME = 'hitc-breathe-pwa-v2';
 const ASSETS = [
   './',
   './index.html',

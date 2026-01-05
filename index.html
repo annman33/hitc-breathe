@@ -93,5 +93,36 @@
     });
   }
 </script>
+<script>
+// iOS/Safari 音訊解鎖：需要「使用者手勢」後 Audio 才會出聲
+(function () {
+  let unlocked = false;
+  function unlock() {
+    if (unlocked) return;
+    unlocked = true;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      const ctx = new AC();
+      // create a silent buffer and play once to unlock
+      const buffer = ctx.createBuffer(1, 1, 22050);
+      const src = ctx.createBufferSource();
+      src.buffer = buffer;
+      src.connect(ctx.destination);
+      if (ctx.state === 'suspended') ctx.resume();
+      src.start(0);
+      // stop/close shortly after (best effort)
+      setTimeout(() => { try { src.stop(); } catch(e) {} }, 50);
+      setTimeout(() => { try { ctx.close(); } catch(e) {} }, 200);
+    } catch (e) {}
+    window.removeEventListener('touchstart', unlock, true);
+    window.removeEventListener('mousedown', unlock, true);
+    window.removeEventListener('keydown', unlock, true);
+  }
+  window.addEventListener('touchstart', unlock, true);
+  window.addEventListener('mousedown', unlock, true);
+  window.addEventListener('keydown', unlock, true);
+})();
+</script>
 </body>
 </html>
